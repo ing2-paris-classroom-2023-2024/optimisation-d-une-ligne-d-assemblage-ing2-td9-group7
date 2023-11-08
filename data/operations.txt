@@ -1,0 +1,2 @@
+operation1 0.5
+-> l'operation 1 est effectuee en 0.5 secondes

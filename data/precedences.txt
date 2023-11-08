@@ -1,0 +1,2 @@
+operation1 operation2
+--> operation1 operation2 est un arc du graphe de predecedences

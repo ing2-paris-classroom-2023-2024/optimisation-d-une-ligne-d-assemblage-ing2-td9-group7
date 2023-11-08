@@ -1,0 +1,2 @@
+operation1 operation2
+--> les operations 1 et 2 ne peuvent pas etre dans le meme bloc
