@@ -1,16 +1,16 @@
-
 #include <stdio.h>
+#include "../headers/helper.h"
 
 
-typedef struct {
-    float temps_exec;
-    char * nom_operation;
-} Operation;
-
-
+/*
+ * Charge un fichier et retourne un pointeur vers ce fichier
+ * @param filepath Chemin vers le fichier
+ * @param mode Mode d'ouverture du fichier
+ * @return Pointeur vers le fichier
+*/
 FILE * file_loader(const char * filepath, const char * mode)
 {
-    FILE *file = fopen(filepath, mode);
+    FILE * file = fopen(filepath, mode);
     if (!file) {
         char clion_filepath[100];
         strcpy(clion_filepath, "../");
@@ -27,6 +27,11 @@ FILE * file_loader(const char * filepath, const char * mode)
 }
 
 
+/*
+ * Affiche les opérations de la liste des opérations
+ * @param operations Tableau d'opérations
+ * @param nb_operations Nombre d'opérations
+*/
 void afficher_operations(Operation *operations, int nb_operations)
 {
     for (int i = 0; i < nb_operations; i++) {
@@ -35,6 +40,11 @@ void afficher_operations(Operation *operations, int nb_operations)
 }
 
 
+/*
+ * Retourne le temps max d'un cycle lu dans le fichier texte
+ * @param file_path Chemin vers le fichier
+ * @return Temps max d'un cycle
+*/
 int get_temps_cycle(char * file_path)
 {
     printf("\nLecture du fichier %s...\n", file_path);
@@ -49,6 +59,11 @@ int get_temps_cycle(char * file_path)
 }
 
 
+/*
+ * Retourne la liste des opérations lues dans le fichier texte
+ * @param file_path Chemin vers le fichier
+ * @return Tableau d'opérations
+*/
 Operation * get_operations(char * file_path)
 {
     printf("\nLecture du fichier %s...\n", file_path);
