@@ -9,9 +9,10 @@
 int main()
 {
     printf("Hello World!\n");
-    test_exclusions();
-    test_precedences();
-    test_temps_cycle();
-    test_helper();
+
+    int temps_cycle = get_temps_cycle("data/temps_cycle.txt");
+
+    Operation * operations = get_operations("data/operations.txt");
+    
     return 0;
 }
