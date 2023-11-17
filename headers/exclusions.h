@@ -1,6 +1,8 @@
+#ifndef EXCLUSIONS_H
+#define EXCLUSIONS_H
+
 #include <stdio.h>
 
-void test_exclusions()
-{
-    printf("Test exclusions!\n");
-}
+void test_exclusions();
+
+#endif // EXCLUSIONS_H
