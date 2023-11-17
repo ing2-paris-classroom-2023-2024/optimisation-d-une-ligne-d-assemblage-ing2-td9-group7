@@ -5,5 +5,6 @@
 
 
 void test_precedences();
+void read_precedences(char * filename);
 
 #endif // PRECEDENCES_H
