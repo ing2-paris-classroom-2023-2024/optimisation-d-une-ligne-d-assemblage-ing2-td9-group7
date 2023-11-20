@@ -49,7 +49,9 @@ Arete * get_precedences(char * file_path)
  * @return Tableau de blocs
  */
 //! Attention : Si une operation ne figure pas dans les precedences, elle peut etre n'importe ou
-Bloc ** chaine_precedences()
+//& faire une grosse liste d'opération en suivant les precedences
+//& puis la découper en blocs avec la contrainte de temps de cycle
+Chaine_production * chaine_precedences()
 {
     int nombre_operations = 1;
 
@@ -60,4 +62,8 @@ Bloc ** chaine_precedences()
     printf("Nombre d'operations : %d\n", nombre_operations);
 
     int nombre_blocs = nombre_operations;
+
+    // On crée la chaine
+    Chaine_production * chaine_production = init_chaine_production(nombre_blocs, nombre_operations);
+    afficher_chaine_production(chaine_production);
 }

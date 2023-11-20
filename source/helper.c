@@ -61,13 +61,19 @@ void afficher_aretes(Arete * aretes, int taille)
  * @param nb_op Nombre d'opérations du bloc
  * @return Bloc initialisé
 */
-Bloc * init_bloc(int nb_op_total, int nb_op) {
+Bloc * init_bloc(int nb_op_total, int nb_op, int id) {
     Bloc * bloc = malloc(sizeof(Bloc));
 
-    bloc->id_bloc = 0;
+    bloc->id_bloc = id;
     bloc->temps_bloc = 0;
     bloc->nb_operations = nb_op;
     bloc->operations = malloc(nb_op_total * sizeof(Operation));
+
+    for (int i = 0; i < nb_op; i++) {
+        bloc->operations[i].nom_operation = malloc(100 * sizeof(char));
+        bloc->operations[i].nom_operation = "NULL";
+        bloc->operations[i].temps_operation = 0;
+    }
 
     return bloc;
 }
@@ -95,11 +101,13 @@ int calculate_bloc_time(Bloc * bloc) {
  * @param nb_op_total Nombre d'opérations total
  * @return Chaine de production initialisée
 */
-Bloc ** init_chaine_production(int nb_blocs, int nb_op_total) {
-    Bloc ** chaine_production = malloc(nb_blocs * sizeof(Bloc *));
+Chaine_production * init_chaine_production(int nb_blocs, int nb_op_total) {
+    Chaine_production * chaine_production = malloc(sizeof(Chaine_production));
+    chaine_production->nb_blocs = nb_blocs;
+    chaine_production->blocs = malloc(nb_blocs * sizeof(Bloc *));
 
     for (int i = 0; i < nb_blocs; i++) {
-        chaine_production[i] = init_bloc(nb_op_total, nb_blocs);
+        chaine_production->blocs[i] = init_bloc(nb_op_total, nb_blocs, i + 1);
     }
 
     return chaine_production;
@@ -113,7 +121,7 @@ Bloc ** init_chaine_production(int nb_blocs, int nb_op_total) {
 */
 void afficher_bloc(Bloc * bloc)
 {
-    printf("Bloc %d :\n", bloc->id_bloc);
+    printf("\nBloc %d :\n", bloc->id_bloc);
 
     for (int i = 0; i < bloc->nb_operations; i++) {
         printf("Operation %d : %s, %.1f secondes\n", i + 1, bloc->operations[i].nom_operation, bloc->operations[i].temps_operation);
@@ -133,7 +141,7 @@ void afficher_chaine_production(Chaine_production * chaine_production)
     printf("\nAffichage de la chaine de production :\n");
 
     for (int i = 0; i < chaine_production->nb_blocs; i++) {
-        afficher_bloc(&chaine_production->blocs[i]);
+        afficher_bloc(chaine_production->blocs[i]);
     }
 }
 

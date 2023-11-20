@@ -22,7 +22,7 @@ typedef struct {
 
 typedef struct {
     int nb_blocs;
-    Bloc * blocs;
+    Bloc ** blocs;
 } Chaine_production;
 
 // Prototypes de fonctions

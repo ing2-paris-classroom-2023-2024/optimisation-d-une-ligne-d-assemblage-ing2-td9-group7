@@ -13,7 +13,7 @@ int main()
 {
     printf("Hello World!\n");
 
-    Bloc ** chaine = chaine_precedences();
+    Chaine_production * chaine = chaine_precedences();
 
     return 0;
 }
