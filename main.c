@@ -13,8 +13,7 @@ int main()
 {
     printf("Hello World!\n");
 
-    int temps_cycle = get_temps_cycle("data/temps_cycle.txt");
-    Operation * operations = get_operations("data/operations.txt");
+    Bloc ** chaine = chaine_precedences();
 
     return 0;
 }

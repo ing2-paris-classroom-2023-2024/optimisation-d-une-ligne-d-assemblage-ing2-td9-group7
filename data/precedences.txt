@@ -1,2 +1,7 @@
-operation1 operation2
---> operation1 operation2 est un arc du graphe de predecedences
+op1 op2
+op2 op3
+op2 op4
+op4 op8
+op4 op7
+op7 op5
+op7 op6
