@@ -8,12 +8,11 @@
 #include "headers/precedences.h"
 #include "source/precedences.c"
 
-
 int main()
 {
     printf("Hello World!\n");
 
-    Chaine_production * chaine = chaine_precedences();
+    Chaine_production *chaine = chaine_precedences();
 
     return 0;
 }

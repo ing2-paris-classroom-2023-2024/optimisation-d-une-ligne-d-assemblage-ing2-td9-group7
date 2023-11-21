@@ -9,7 +9,8 @@
 
 typedef struct {
     float temps_operation;
-    char * nom_operation;
+    int id_operation;
+    int profondeur;
 } Operation;
 
 typedef struct {

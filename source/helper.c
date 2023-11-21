@@ -37,9 +37,10 @@ FILE * file_loader(const char * filepath, const char * mode)
 void afficher_operations(Operation * operations, int nb_operations)
 {
     for (int i = 0; i < nb_operations; i++) {
-        printf("Operation %d : %s, %.1fs\n", i + 1, operations[i].nom_operation, operations[i].temps_operation);
+        printf("Operation %d : %.1fs, %d\n", operations[i].id_operation, operations[i].temps_operation, operations[i].profondeur);
     }
 }
+
 
 
 /*
@@ -50,7 +51,7 @@ void afficher_operations(Operation * operations, int nb_operations)
 void afficher_aretes(Arete * aretes, int taille)
 {
     for (int i = 0; i < taille; i++) {
-        printf("Arete %d : %s -> %s\n", i + 1, aretes[i].op_depart, aretes[i].op_arrivee);
+        printf("Arete %d : %d -> %d\n", i + 1, aretes[i].op_depart, aretes[i].op_arrivee);
     }
 }
 
@@ -70,8 +71,7 @@ Bloc * init_bloc(int nb_op_total, int nb_op, int id) {
     bloc->operations = malloc(nb_op_total * sizeof(Operation));
 
     for (int i = 0; i < nb_op; i++) {
-        bloc->operations[i].nom_operation = malloc(100 * sizeof(char));
-        bloc->operations[i].nom_operation = "NULL";
+        bloc->operations[i].id_operation = -1;
         bloc->operations[i].temps_operation = 0;
     }
 
@@ -124,7 +124,7 @@ void afficher_bloc(Bloc * bloc)
     printf("\nBloc %d :\n", bloc->id_bloc);
 
     for (int i = 0; i < bloc->nb_operations; i++) {
-        printf("Operation %d : %s, %.1f secondes\n", i + 1, bloc->operations[i].nom_operation, bloc->operations[i].temps_operation);
+        printf("Operation %d : %d, %.1f secondes\n", i + 1, bloc->operations[i].id_operation, bloc->operations[i].temps_operation);
         bloc->temps_bloc += bloc->operations[i].temps_operation;
     }
 
@@ -189,11 +189,11 @@ Operation * get_operations(char * file_path, int * nb_operations)
 
     // creation du tableau d'operations
     Operation * operations = malloc(*nb_operations * sizeof(Operation));
-
+    printf("affichage de operations");
     // remplissage du tableau d'operations
-    for (int i = 0; i < *nb_operations; i++) {
-        operations[i].nom_operation = malloc(100 * sizeof(char)); // Allouer suffisamment d'espace pour stocker le nom de l'opération
-        fscanf(fichier, "%99s %f\n", operations[i].nom_operation, &operations[i].temps_operation);
+    for (int i = 0; i < *nb_operations; i++) { // Allouer suffisamment d'espace pour stocker le nom de l'opération
+        fscanf(fichier, "%d %f\n", &operations[i].id_operation, &operations[i].temps_operation);
+        operations[i].profondeur = 0;
     }
 
     afficher_operations(operations, *nb_operations);

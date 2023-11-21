@@ -4,11 +4,11 @@
 #include <stdio.h>
 // Structures
 typedef struct {
-    char * op_depart;
-    char * op_arrivee;
+    int op_depart;
+    int op_arrivee;
 } Arete;
 
 
-Arete * get_precedences(char * filename);
+Arete * get_precedences(char * filename, int * taille);
 
 #endif // PRECEDENCES_H
