@@ -124,11 +124,14 @@ void afficher_bloc(Bloc * bloc)
     printf("\nBloc %d :\n", bloc->id_bloc);
 
     for (int i = 0; i < bloc->nb_operations; i++) {
-        printf("Operation %d : %d, %.1f secondes\n", i + 1, bloc->operations[i].id_operation, bloc->operations[i].temps_operation);
+        if (bloc->operations[i].id_operation != -1)
+        {
+            printf("Operation : %d, %.1f secondes\n", bloc->operations[i].id_operation, bloc->operations[i].temps_operation);
+        }
         bloc->temps_bloc += bloc->operations[i].temps_operation;
     }
 
-    printf("Temps d'execution : %d secondes\n", bloc->temps_bloc);
+    printf("Temps d'execution : %.1f secondes\n", bloc->temps_bloc);
 }
 
 
@@ -196,7 +199,7 @@ Operation * get_operations(char * file_path, int * nb_operations)
         operations[i].profondeur = 0;
     }
 
-    afficher_operations(operations, *nb_operations);
+    // afficher_operations(operations, *nb_operations);
 
     fclose(fichier);
     return operations;
