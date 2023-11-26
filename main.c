@@ -12,7 +12,7 @@ int main()
 {
     printf("Hello World!\n");
 
-    Chaine_production *chaine = chaine_precedences();
+    init_graphe();
 
     return 0;
 }
