@@ -2,6 +2,7 @@
 
 #include "../headers/helper.h"
 #include <stdlib.h>
+#include <stdbool.h>
 
 
 /*
@@ -36,15 +37,30 @@ Cette fonction répartit les opérations entre les stations de manière optimis�
 * @param taille_aretes : Nombre d'arêtes
 * @param temps_cycle : Temps de cycle à respecter
 */
-void repartir_operations_optimise(Chaine_production * chaine_production, Operation * operations, int nb_operations, Arete * aretes, int taille_aretes, int temps_cycle)
-{
+void repartir_operations_optimise(Chaine_production * chaine_production, Operation * operations, int nb_operations, Arete * aretes, int taille_aretes, int temps_cycle) {
     printf("\nRepartition des operations entre les stations de maniere optimisee...\n");
 
     float temps_total = 0;
     int num_bloc = 0;
 
+    // Tableau pour marquer les opérations incluses dans un bloc
+    bool *operation_incluse = (bool *)malloc(nb_operations * sizeof(bool));
+    if (operation_incluse == NULL) {
+        fprintf(stderr, "Erreur d'allocation de mémoire\n");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < nb_operations; i++) {
+        operation_incluse[i] = false;
+    }
+
     int i = 0;
     while (i < nb_operations) {
+        if (operation_incluse[i]) {
+            i++;
+            continue;
+        }
+
         Operation * operation_actuelle = &operations[i];
         float temps_operation = operation_actuelle->temps_operation;
 
@@ -52,7 +68,7 @@ void repartir_operations_optimise(Chaine_production * chaine_production, Operati
             int j = i + 1;
             float temps_suivant = 0;
             int meilleur_j = -1;
-            float meilleur_diff = temps_cycle;
+            float meilleur_diff = temps_cycle - temps_total;
             while (j < nb_operations && operations[j].profondeur == operation_actuelle->profondeur) {
                 temps_suivant += operations[j].temps_operation;
                 float diff = abs((temps_total + temps_suivant) - temps_cycle);
@@ -62,6 +78,18 @@ void repartir_operations_optimise(Chaine_production * chaine_production, Operati
                 }
                 j++;
             }
+
+            // boucle permettant de parcourir les opérations de même profondeur que la dernière du bloc afin d'optimiser les blocs et leurs nombres
+            j = i + 1;
+            while (j < nb_operations && operations[j].profondeur == operation_actuelle->profondeur) {
+                float diff = abs((temps_total + temps_operation + operations[j].temps_operation) - temps_cycle);
+                if (diff <= meilleur_diff) {
+                    meilleur_diff = diff;
+                    meilleur_j = j;
+                }
+                j++;
+            }
+
             if (meilleur_j != -1) {
                 temps_suivant = 0;
                 for (int k = i + 1; k <= meilleur_j; k++) {
@@ -72,6 +100,8 @@ void repartir_operations_optimise(Chaine_production * chaine_production, Operati
                         printf("ajouter l'operation %d au bloc %d\n", operations[k].id_operation, num_bloc);
                         Bloc * bloc_actuel = chaine_production->blocs[num_bloc];
                         bloc_actuel->operations[k] = operations[k];
+                        // Marquer l'opération comme incluse
+                        operation_incluse[k] = true;
                     }
                     i = meilleur_j;
                 }
@@ -87,6 +117,10 @@ void repartir_operations_optimise(Chaine_production * chaine_production, Operati
 
         Bloc * bloc_actuel = chaine_production->blocs[num_bloc];
         bloc_actuel->operations[i] = *operation_actuelle;
+        // Marquer l'opération comme incluse
+        operation_incluse[i] = true;
         i++;
     }
+
+    free(operation_incluse);
 }
