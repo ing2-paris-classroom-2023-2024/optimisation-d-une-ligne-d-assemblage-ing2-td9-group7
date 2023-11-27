@@ -126,7 +126,7 @@ void afficher_bloc(Bloc * bloc)
     for (int i = 0; i < bloc->nb_operations; i++) {
         if (bloc->operations[i].id_operation != -1)
         {
-            printf("Operation : %d, %.1f secondes\n", bloc->operations[i].id_operation, bloc->operations[i].temps_operation);
+            printf("Operation : %d, %.1f secondes, %d\n", bloc->operations[i].id_operation, bloc->operations[i].temps_operation,  bloc->operations[i].profondeur);
         }
         bloc->temps_bloc += bloc->operations[i].temps_operation;
     }
@@ -204,3 +204,4 @@ Operation * get_operations(char * file_path, int * nb_operations)
     fclose(fichier);
     return operations;
 }
+
