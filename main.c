@@ -10,9 +10,19 @@
 
 int main()
 {
-    printf("Hello World!\n");
+    /*int taille = 1;
+    int ordre = 1;
 
-    init_graphe();
+    Arete* aretes_exclusions;
+    Operation* operations_excluisons;
+    Operation * test;
+
+    aretes_exclusions = get_arete("./data/exclusions.txt",&taille);
+    operations_excluisons =get_operation("./data/operations.txt", &ordre);
+    test = get_degre("./data/exclusions.txt", operations_excluisons, taille, ordre);*/
+    int ordre = 1;
+    Operation* operations_excluisons = init_graphe(&ordre);
+    Operation* operations_triees = triDecroissant( operations_excluisons, &ordre);
 
     return 0;
 }

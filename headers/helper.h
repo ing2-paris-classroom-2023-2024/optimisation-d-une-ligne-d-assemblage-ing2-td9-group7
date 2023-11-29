@@ -11,6 +11,7 @@ typedef struct {
     float temps_operation;
     int id_operation;
     int profondeur;
+    int deg;
 } Operation;
 
 typedef struct {
