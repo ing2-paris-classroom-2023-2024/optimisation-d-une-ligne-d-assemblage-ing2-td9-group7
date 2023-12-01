@@ -12,8 +12,10 @@
 int main()
 {
     int ordre = 1;
-    Operation * operations_exclusions = init_graphe(&ordre);
-    Operation * operations_triees = triDecroissantDegre( operations_exclusions, &ordre);
+    int size;
+    Operation * operations_exclusions = init_graphe(&ordre, &size);
+    Operation * operations_triees = triDecroissantDegre( operations_exclusions, &ordre, &size);
 
+    printf("\nFINITO\n");
     return 0;
 }

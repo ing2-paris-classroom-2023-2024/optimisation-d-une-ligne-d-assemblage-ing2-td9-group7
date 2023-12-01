@@ -12,6 +12,7 @@ typedef struct {
     int id_operation;
     int profondeur;
     int deg;
+    int color;
 } Operation;
 
 typedef struct {

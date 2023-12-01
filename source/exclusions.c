@@ -49,17 +49,17 @@ Arete * get_arete(char * file_path, int * taille)
  * @param operations : Tableau d'opérations
  * @param ordre      : Ordre du graphe
  */
-Operation * triDecroissantDegre(Operation* operations, int* ordre)
-{
+// Fonction pour trier les opérations par ordre décroissant de degré
+Operation *triDecroissantDegre(Operation *operations, int *ordre, int *size) {
     int i, j;
+    int *liste = malloc(*ordre * sizeof(int)); // Utiliser malloc pour allouer dynamiquement la mémoire
+    int *liste_sommet1 = malloc(*size * sizeof(int));
+    int *liste_sommet2 = malloc(*size * sizeof(int));
     Operation temp;
 
-    for (i = 0; i < *ordre - 1; i++)
-    {
-        for (j = 0; j < *ordre - i - 1; j++)
-        {
-            if (operations[j].deg < operations[j + 1].deg)
-            {
+    for (i = 0; i < *ordre - 1; i++) {
+        for (j = 0; j < *ordre - i - 1; j++) {
+            if (operations[j].deg < operations[j + 1].deg) {
                 temp = operations[j];
                 operations[j] = operations[j + 1];
                 operations[j + 1] = temp;
@@ -69,9 +69,69 @@ Operation * triDecroissantDegre(Operation* operations, int* ordre)
 
     printf("Liste triee : \n");
 
-    for(int k = 0; k < *ordre; k++){
-        printf("Le degre du sommet  %d est %d \n", operations[k].id_operation, operations[k].deg );
+    for (int k = 0; k < *ordre; k++) {
+        printf("Le degre du sommet %d est %d \n", operations[k].id_operation, operations[k].deg);
+        liste[k] = operations[k].id_operation;
     }
+
+    printf("liste de Jerry : \n");
+    for (int k = 0; k < *ordre; k++) {
+        printf("case %d de Jerry : %d \n", k, liste[k]);
+    }
+
+    printf("Lecture du fichier exclusions.txt...\n");
+    FILE *fichier2 = file_loader("./data/exclusions.txt", "r");
+
+    for (int i = 0; i < *size; i++) {
+        int temp1, temp2;
+        fscanf(fichier2, "%d %d", &temp1, &temp2);
+        liste_sommet1[i] = temp1;
+        liste_sommet2[i] = temp2;
+    }
+
+    fclose(fichier2);
+
+    // Appliquer l'algorithme de coloration
+    for (int i = 0; i < *ordre; i++) {
+        // Initialiser un tableau pour suivre les couleurs utilisées
+        int *couleurs_utilisees = calloc(*ordre, sizeof(int)); // Utiliser calloc pour initialiser à zéro
+
+        // Parcourir les sommets adjacents et marquer les couleurs utilisées
+        for (int j = 0; j < *size; j++) {
+            if (liste_sommet1[j] == liste[i] || liste_sommet2[j] == liste[i]) {
+                int index_sommet_adjacent = (liste_sommet1[j] == liste[i]) ? liste_sommet2[j] : liste_sommet1[j];
+                int couleur_adjacente = operations[index_sommet_adjacent].color;
+
+                //printf("%d incompatible avec %d \n", index_sommet_adjacent, liste[i]);
+
+                if (couleur_adjacente > 0 && couleur_adjacente <= *ordre) {
+                    couleurs_utilisees[couleur_adjacente - 1] = 1; // Marquer la couleur comme utilisée
+                }
+            }
+
+        }
+
+        // Trouver la première couleur disponible
+        int couleur_disponible = 1;
+        while (couleurs_utilisees[couleur_disponible - 1] != 0) {
+            couleur_disponible++;
+        }
+
+        // Attribuer la couleur trouvée au sommet actuel
+        operations[i].color = couleur_disponible;
+        printf("color de %d : %d \n", operations[i].id_operation, operations[i].color);
+
+        // Libérer la mémoire allouée pour le tableau de couleurs utilisées
+        free(couleurs_utilisees);
+    }
+
+    // Libérer la mémoire allouée dynamiquement
+    free(liste);
+    free(liste_sommet1);
+    free(liste_sommet2);
+
+    printf("\nFIN COLORATION\n");
+
     return operations;
 }
 
@@ -81,7 +141,7 @@ Operation * triDecroissantDegre(Operation* operations, int* ordre)
  * @param file_path : Chemin vers le fichier
  * @return operations   : Tableau d'opérations
  */
-Operation * init_graphe(int* ordre)
+Operation * init_graphe(int* ordre, int* size)
 {
     Operation * operations;
      // On initialise la taille à 1, et non 0 car on va compter le nbr de \n et la dernière n'en contient pas (End Of File)
@@ -104,7 +164,7 @@ Operation * init_graphe(int* ordre)
 
     for(int i = 0 ; i< *ordre; i++)
     {
-        float temp; // on a pas besoin du temps de l'opération car on travaille seulement sur l'exclusion
+        float temp; // on n'a pas besoin du temps de l'opération car on travaille seulement sur l'exclusion
         fscanf(fichier, "%d %f", &operations[i].id_operation, &temp);
         printf("%d \n",operations[i].id_operation);
     }
@@ -121,6 +181,7 @@ Operation * init_graphe(int* ordre)
         }
     }
     printf("La taille du graphe est :  %d \n",taille);
+    *size = taille;
 
     rewind(fichier2);
 
@@ -130,10 +191,10 @@ Operation * init_graphe(int* ordre)
     }
 
     /* pour toutes les exclusions on va verifier si elles se trouvent dans notre graphe,
-      on utilise deux variable (temp2 et temp3) pour stocker les valeurs qu'on lis depuis le fichier
-      ( on utilise deux valeurs car les exclusions sont écrites avec deux nombre sur la meme ligne)
-      et ensuite si la valeur de temp est egal a un des noms dans notre tableau(on le fait avec une boucle for)
-      alors on ajoute au degrée de ce sommet 1 (il faut bien retenir que temp est égal a l'id et non l'index du sommet dans le tableau)
+      on utilise deux variables (temp2 et temp3) pour stocker les valeurs qu'on lit depuis le fichier
+      (on utilise deux valeurs car les exclusions sont écrites avec deux nombres sur la meme ligne)
+      et ensuite si la valeur de temp est égale à un des noms dans notre tableau(on le fait avec une boucle for)
+      alors on ajoute au degré de ce sommet 1 (il faut bien retenir que temp est égal à l'id et non l'index du sommet dans le tableau)
     */
 
     for(int i = 0; i < taille; i++)
@@ -159,3 +220,4 @@ Operation * init_graphe(int* ordre)
 
     return operations;
 }
+
