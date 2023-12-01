@@ -204,4 +204,3 @@ Operation * get_operations(char * file_path, int * nb_operations)
     fclose(fichier);
     return operations;
 }
-
