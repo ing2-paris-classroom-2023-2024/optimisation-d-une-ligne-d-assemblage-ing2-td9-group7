@@ -12,7 +12,7 @@
  * @param file_path : Chemin vers le fichier
  * @return aretes   : Tableau d'aretes
  */
-Arete * get_arete(char * file_path, int * taille)
+Arete * get_exclusions(char * file_path, int * taille)
 {
     printf("\nLecture du fichier %s...\n", file_path);
     FILE * fichier = file_loader(file_path, "r");
@@ -45,170 +45,156 @@ Arete * get_arete(char * file_path, int * taille)
 
 
 /*
- * Tri les opérations par ordre décroissant de degré
- * @param operations : Tableau d'opérations
- * @param ordre      : Ordre du graphe
+ * Tri les operations par ordre decroissant de degre
+ * @param operations : Tableau d'operations
+ * @param ordre      : Nombre d'operations
+ * @param taille     : Nombre d'aretes
+ * @return           : Tableau d'operations triees par degre decroissant
  */
-// Fonction pour trier les opérations par ordre décroissant de degré
-Operation *triDecroissantDegre(Operation *operations, int *ordre, int *size) {
-    int i, j;
-    int *liste = malloc(*ordre * sizeof(int)); // Utiliser malloc pour allouer dynamiquement la mémoire
-    int *liste_sommet1 = malloc(*size * sizeof(int));
-    int *liste_sommet2 = malloc(*size * sizeof(int));
-    Operation temp;
+Operation * tri_operations_degre_decroissant(Operation * operations, int ordre, int taille)
+{
+    Operation * operations_triees = malloc(ordre * sizeof(Operation));
+    memcpy(operations_triees, operations, ordre * sizeof(Operation));
 
-    for (i = 0; i < *ordre - 1; i++) {
-        for (j = 0; j < *ordre - i - 1; j++) {
-            if (operations[j].deg < operations[j + 1].deg) {
-                temp = operations[j];
-                operations[j] = operations[j + 1];
-                operations[j + 1] = temp;
+    for (int i = 0; i < ordre - 1; i++) {
+        for (int j = 0; j < ordre - i - 1; j++) {
+            if (operations_triees[j].deg < operations_triees[j + 1].deg) {
+                Operation temp = operations_triees[j];
+                operations_triees[j] = operations_triees[j + 1];
+                operations_triees[j + 1] = temp;
             }
         }
     }
 
-    printf("Liste triee : \n");
+    printf("\nListe triee : \n");
 
-    for (int k = 0; k < *ordre; k++) {
-        printf("Le degre du sommet %d est %d \n", operations[k].id_operation, operations[k].deg);
-        liste[k] = operations[k].id_operation;
+    for (int k = 0; k < ordre; k++) {
+        printf("S%d\t- D %d \n", operations_triees[k].id_operation, operations_triees[k].deg);
     }
 
-    printf("liste de Jerry : \n");
-    for (int k = 0; k < *ordre; k++) {
-        printf("case %d de Jerry : %d \n", k, liste[k]);
+    return operations_triees;
+}
+
+
+/*
+ * Determine si deux opérations doivent etre separees
+ * @param operations_1 : premiere operation de l'arete
+ * @param operations_2 : deuxieme operation de l'arete
+ * @param aretes       : Tableau d'aretes
+ * @param taille       : Nombre d'aretes
+ * @return             : 1 si les deux operations doivent etre separees, 0 sinon
+*/
+int voisins(Operation * operation_1, Operation * operation_2, Arete * aretes, int taille)
+{
+    // renvoie 1 si le sommet est voisin d'un autre sommet, 0 sinon
+    for (int i = 0; i < taille; i++) {
+        if ((aretes[i].op_depart == operation_1->id_operation && aretes[i].op_arrivee == operation_2->id_operation) || (aretes[i].op_depart == operation_2->id_operation && aretes[i].op_arrivee == operation_1->id_operation)) {
+            return 1;
+        }
     }
 
-    printf("Lecture du fichier exclusions.txt...\n");
-    FILE *fichier2 = file_loader("./data/exclusions.txt", "r");
+    return 0;
+}
 
-    for (int i = 0; i < *size; i++) {
-        int temp1, temp2;
-        fscanf(fichier2, "%d %d", &temp1, &temp2);
-        liste_sommet1[i] = temp1;
-        liste_sommet2[i] = temp2;
-    }
 
-    fclose(fichier2);
+/*
+ * Attribution des couleurs aux opérations selon l'algorithme de Welsh-Powell
+ * @param operations : Tableau d'opérations
+ * @param aretes     : Tableau d'aretes
+ * @param ordre      : Nombre d'opérations
+*/
+void welsh_powell_coloration(Operation * operations, Arete * aretes, int ordre, int taille)
+{
+    /* 1. Trier les sommets par ordre décroissant de degré (deja fait)
+       2. tant que tous les sommets ne sont pas coloriés
+       3. Considerer une couleur C, differente de toutes les couleurs deja utilisees
+       4. Considerer le premier sommet dans l'ordre decroissant des degres et lui attribuer la couleur C
+       5. Considerer chacun des autres sommets non colories dans l'ordre decroissant des degres
+       6. S'il est adjacent a un sommet deja colorie avec la couleur C, ne lui affecter aucune couleur
+       7. Sinon, lui affecter la couleur C
+    */
 
-    // Appliquer l'algorithme de coloration
-    for (int i = 0; i < *ordre; i++) {
-        // Initialiser un tableau pour suivre les couleurs utilisées
-        int *couleurs_utilisees = calloc(*ordre, sizeof(int)); // Utiliser calloc pour initialiser à zéro
+    // 2. tant que tous les sommets ne sont pas coloriés
+    for (int i = 0; i < ordre; i++) {
+        // 3. Considerer une couleur C, differente de toutes les couleurs deja utilisees
+        int couleur = 1;
 
-        // Parcourir les sommets adjacents et marquer les couleurs utilisées
-        for (int j = 0; j < *size; j++) {
-            if (liste_sommet1[j] == liste[i] || liste_sommet2[j] == liste[i]) {
-                int index_sommet_adjacent = (liste_sommet1[j] == liste[i]) ? liste_sommet2[j] : liste_sommet1[j];
-                int couleur_adjacente = operations[index_sommet_adjacent].color;
-
-                //printf("%d incompatible avec %d \n", index_sommet_adjacent, liste[i]);
-
-                if (couleur_adjacente > 0 && couleur_adjacente <= *ordre) {
-                    couleurs_utilisees[couleur_adjacente - 1] = 1; // Marquer la couleur comme utilisée
-                }
+        // 4. Considerer le premier sommet dans l'ordre decroissant des degres et lui attribuer la couleur C
+        // 5. Considerer chacun des autres sommets non colories dans l'ordre decroissant des degres
+        for (int j = 0; j < ordre; j++) {
+            // 6. S'il est adjacent a un sommet deja colorie avec la couleur C, ne lui affecter aucune couleur
+            if (voisins(&operations[i], &operations[j], aretes, taille) && operations[j].color == couleur) {
+                couleur++;
+                j = 0;
             }
-
         }
 
-        // Trouver la première couleur disponible
-        int couleur_disponible = 1;
-        while (couleurs_utilisees[couleur_disponible - 1] != 0) {
-            couleur_disponible++;
-        }
-
-        // Attribuer la couleur trouvée au sommet actuel
-        operations[i].color = couleur_disponible;
-        printf("color de %d : %d \n", operations[i].id_operation, operations[i].color);
-
-        // Libérer la mémoire allouée pour le tableau de couleurs utilisées
-        free(couleurs_utilisees);
+        // 7. Sinon, lui affecter la couleur C
+        operations[i].color = couleur;
     }
+}
 
-    // Libérer la mémoire allouée dynamiquement
-    free(liste);
-    free(liste_sommet1);
-    free(liste_sommet2);
 
-    printf("\nFIN COLORATION\n");
+/*
+ * Affiche les couleurs des opérations
+ * @param operations : Tableau d'opérations
+ * @param ordre      : Nombre d'opérations
+*/
+void afficher_couleurs(Operation * operations, int ordre)
+{
+    printf("\nCouleurs\n");
+
+    for (int i = 0; i < ordre; i++) {
+        printf("S%d\t- C %d \n", operations[i].id_operation, operations[i].color);
+    }
+}
+
+
+/*
+ * Assigne les couleurs aux opérations
+ * @param operations : Tableau d'opérations
+ * @param aretes     : Tableau d'aretes
+ * @param ordre      : Nombre d'opérations
+ * @param taille     : Nombre d'aretes
+*/
+Operation * assigner_couleurs(Operation * operations, Arete * aretes, int * ordre, int * taille)
+{
+    operations = tri_operations_degre_decroissant(operations, *ordre, *taille);
+
+    welsh_powell_coloration(operations, aretes, *ordre, *taille);
+
+    afficher_couleurs(operations, *ordre);
 
     return operations;
 }
 
 
 /*
- * Retourne les opérations lues dans le fichier texte
- * @param file_path : Chemin vers le fichier
- * @return operations   : Tableau d'opérations
+ * Initialise les degres des operations
+ * @param operations : Tableau d'operations
+ * @param aretes     : Tableau d'aretes
+ * @param ordre      : Nombre d'operations
+ * @param taille     : Nombre d'aretes
  */
-Operation * init_graphe(int* ordre, int* size)
+void init_degres(Operation * operations, Arete * aretes, int * ordre, int * taille)
 {
-    Operation * operations;
-     // On initialise la taille à 1, et non 0 car on va compter le nbr de \n et la dernière n'en contient pas (End Of File)
-    printf("lecture du fichier operations.txt...\n");
-    FILE * fichier = file_loader("./data/operations.txt", "r");
-    char c;
-    while ((c = fgetc(fichier)) != EOF)
+    // initialiser les degres des operations a 0
+    for(int i = 0; i < *ordre; i++)
     {
-        if (c == '\n')
-        {
-            (*ordre)++;
-        }
+        operations[i].deg = 0;
     }
 
-    printf("l'ordre du graphe est :  %d \n", *ordre);
-
-    operations = malloc(*ordre * sizeof(Operation));
-    // retour au debut du fichier
-    rewind(fichier);
-
-    for(int i = 0 ; i< *ordre; i++)
+    // calculer les degres des operations
+    for(int i = 0; i < *taille; i++)
     {
-        float temp; // on n'a pas besoin du temps de l'opération car on travaille seulement sur l'exclusion
-        fscanf(fichier, "%d %f", &operations[i].id_operation, &temp);
-        printf("%d \n",operations[i].id_operation);
-    }
-    fclose(fichier);
-
-    printf("Lecture du fichier exclusions.txt...\n");
-    FILE * fichier2 = file_loader("./data/exclusions.txt", "r");
-
-    int taille = 1;
-    while ((c = fgetc(fichier2)) != EOF)
-    {
-        if (c == '\n') {
-            taille++;
-        }
-    }
-    printf("La taille du graphe est :  %d \n",taille);
-    *size = taille;
-
-    rewind(fichier2);
-
-    for(int l = 0; l < *ordre; l++)
-    {
-        operations[l].deg = 0;
-    }
-
-    /* pour toutes les exclusions on va verifier si elles se trouvent dans notre graphe,
-      on utilise deux variables (temp2 et temp3) pour stocker les valeurs qu'on lit depuis le fichier
-      (on utilise deux valeurs car les exclusions sont écrites avec deux nombres sur la meme ligne)
-      et ensuite si la valeur de temp est égale à un des noms dans notre tableau(on le fait avec une boucle for)
-      alors on ajoute au degré de ce sommet 1 (il faut bien retenir que temp est égal à l'id et non l'index du sommet dans le tableau)
-    */
-
-    for(int i = 0; i < taille; i++)
-    {
-        int temp2, temp3;
-        fscanf(fichier2, "%d %d", &temp2, &temp3);
-
         for(int j = 0; j < *ordre; j++)
         {
-            if(temp2 == operations[j].id_operation)
+            if(aretes[i].op_depart == operations[j].id_operation)
             {
                 operations[j].deg++;
             }
-            if(temp3 == operations[j].id_operation)
+
+            if(aretes[i].op_arrivee == operations[j].id_operation)
             {
                 operations[j].deg++;
             }
@@ -216,8 +202,5 @@ Operation * init_graphe(int* ordre, int* size)
 
     }
 
-    fclose(fichier2);
-
-    return operations;
+    afficher_operations(operations, *ordre);
 }
-

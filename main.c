@@ -12,9 +12,12 @@
 int main()
 {
     int ordre = 1;
-    int size;
-    Operation * operations_exclusions = init_graphe(&ordre, &size);
-    Operation * operations_triees = triDecroissantDegre( operations_exclusions, &ordre, &size);
+    int taille = 1;
+    Arete * aretes = get_exclusions("data/exclusions.txt", &taille);
+    Operation * operations = get_operations("data/operations.txt", &ordre);
+
+    init_degres(operations, aretes, &ordre, &taille);
+    operations = assigner_couleurs(operations, aretes, &ordre, &taille);
 
     printf("\nFINITO\n");
     return 0;
