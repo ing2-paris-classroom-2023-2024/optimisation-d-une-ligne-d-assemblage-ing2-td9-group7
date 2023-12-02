@@ -106,43 +106,15 @@ Operation * tri_operations_profondeur(Operation * operations, int taille)
 //! Attention : Si une operation ne figure pas dans les precedences, elle peut etre n'importe ou
 //& faire une grosse liste d'opération en suivant les precedences
 //& puis la découper en blocs avec la contrainte de temps de cycle
-Chaine_production * chaine_precedences()
+Chaine_production * chaine_precedences(int nombre_operations, int taille, Operation * operations, Arete * aretes)
 {
-    int nombre_operations = 1;
-    int taille = 1;
-
-    // On récupère les opérations et les arêtes
-    Operation * operations = get_operations("data/operations.txt", &nombre_operations);
-    Arete * aretes = get_precedences("data/precedences.txt", &taille);
-
-    // Effectuer le parcours en profondeur
-    int* visite = (int*)malloc(nombre_operations * sizeof(int));
-    for (int i = 0; i < nombre_operations; i++) {
-        visite[i] = 0; // Aucun sommet n'a été visité au début
-    }
-
-    // Choisir un sommet de départ (par exemple, le premier sommet de la liste)
-    int sommetDepart = 1;
-
-    // Effectuer le parcours en profondeur
-    parcoursProfondeur(sommetDepart, aretes, visite, operations, 0, taille);
-
-    // Trier les opérations par profondeur
-    operations = tri_operations_profondeur(operations, nombre_operations);
-
-    // Afficher les opérations
-    afficher_operations(operations, nombre_operations);
-
-    // Libérer la mémoire
-    free(visite);
-
     printf("Nombre d'operations : %d\n", nombre_operations);
 
     int nombre_blocs = nombre_operations;
 
     // On crée la chaine
     Chaine_production * chaine_production = init_chaine_production(nombre_blocs, nombre_operations);
-    afficher_chaine_production(chaine_production);
+    //afficher_chaine_production(chaine_production);
 
     return chaine_production;
 }

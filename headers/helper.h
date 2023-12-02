@@ -17,7 +17,7 @@ typedef struct {
 
 typedef struct {
     int id_bloc;
-    int temps_bloc;
+    float temps_bloc;
     int nb_operations;
     Operation * operations;
 } Bloc;
