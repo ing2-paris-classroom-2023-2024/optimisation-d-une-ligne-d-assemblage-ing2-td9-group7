@@ -1,8 +1,0 @@
-[
-{
-  "directory": "C:/Users/nriha/optimisation-d-une-ligne-d-assemblage-ing2-td9-group7/build",
-  "command": "C:\\MinGW\\bin\\gcc.exe   -g -std=gnu11 -o CMakeFiles\\Projet_Algo_S1.dir\\main.c.obj -c C:\\Users\\nriha\\optimisation-d-une-ligne-d-assemblage-ing2-td9-group7\\main.c",
-  "file": "C:/Users/nriha/optimisation-d-une-ligne-d-assemblage-ing2-td9-group7/main.c",
-  "output": "CMakeFiles/Projet_Algo_S1.dir/main.c.obj"
-}
-]
