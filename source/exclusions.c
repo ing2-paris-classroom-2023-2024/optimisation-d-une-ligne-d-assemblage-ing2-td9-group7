@@ -204,3 +204,20 @@ void init_degres(Operation * operations, Arete * aretes, int * ordre, int * tail
 
     afficher_operations(operations, *ordre);
 }
+
+
+/*
+ * Appelle simplement les fonctions pour resoudre la contrainte d'exclusion
+ */
+void contrainte_exclusion()
+{
+    int ordre = 1;
+    int taille = 1;
+    Arete * aretes = get_exclusions("data/exclusions.txt", &taille);
+    Operation * operations = get_operations("data/operations.txt", &ordre);
+
+    init_degres(operations, aretes, &ordre, &taille);
+    operations = assigner_couleurs(operations, aretes, &ordre, &taille);
+
+    printf("\nFINITO\n");
+}
