@@ -36,11 +36,11 @@ FILE * file_loader(const char * filepath, const char * mode)
 */
 void afficher_operations(Operation * operations, int nb_operations)
 {
+    printf("\nOperations :\n");
     for (int i = 0; i < nb_operations; i++) {
-        printf("Operation %d : %.1fs, %d\n", operations[i].id_operation, operations[i].temps_operation, operations[i].profondeur);
+        printf("Operation %d : %.1fs, %d, %d\n", operations[i].id_operation, operations[i].temps_operation, operations[i].profondeur, operations[i].deg);
     }
 }
-
 
 
 /*
@@ -192,14 +192,11 @@ Operation * get_operations(char * file_path, int * nb_operations)
 
     // creation du tableau d'operations
     Operation * operations = malloc(*nb_operations * sizeof(Operation));
-    printf("affichage de operations");
     // remplissage du tableau d'operations
     for (int i = 0; i < *nb_operations; i++) { // Allouer suffisamment d'espace pour stocker le nom de l'opération
         fscanf(fichier, "%d %f\n", &operations[i].id_operation, &operations[i].temps_operation);
         operations[i].profondeur = 0;
     }
-
-    // afficher_operations(operations, *nb_operations);
 
     fclose(fichier);
     return operations;

@@ -4,3 +4,5 @@
 */output/*
 */.build/*
 */build/*
+.idea
+cmake-build-debug

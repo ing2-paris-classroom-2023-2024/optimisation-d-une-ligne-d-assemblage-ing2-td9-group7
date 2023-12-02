@@ -64,6 +64,6 @@ int main()
     free(chaine_production);
     free(operations);
     free(aretes);
-
+  
     return 0;
 }
