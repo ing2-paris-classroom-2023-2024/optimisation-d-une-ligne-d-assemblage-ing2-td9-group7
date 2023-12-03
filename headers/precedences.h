@@ -2,9 +2,13 @@
 #define PRECEDENCES_H
 
 #include <stdio.h>
+// Structures
+typedef struct {
+    int op_depart;
+    int op_arrivee;
+} Arete;
 
 
-void test_precedences();
-void read_precedences(char * filename);
+Arete * get_precedences(char * filename, int * taille);
 
 #endif // PRECEDENCES_H

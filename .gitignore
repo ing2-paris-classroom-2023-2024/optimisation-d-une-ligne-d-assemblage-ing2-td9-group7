@@ -1,3 +1,8 @@
 .exe
+**/*.exe
 .vscode
-main.exe
+*/output/*
+*/.build/*
+*/build/*
+.idea
+cmake-build-debug
