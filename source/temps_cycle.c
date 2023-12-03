@@ -41,8 +41,6 @@ Operation * tri_operations_temps_decroissant(Operation * operations, int taille)
 */
 void repartir_operations_optimise(Chaine_production * chaine_production, Operation * operations, int nb_operations, Arete * aretes, int taille_aretes, int temps_cycle)
 {
-    printf("\nRepartition des operations entre les stations de maniere optimisee...\n");
-
     float temps_total = 0;
     int num_bloc = 0;
 
@@ -93,12 +91,16 @@ void repartir_operations_optimise(Chaine_production * chaine_production, Operati
 
             // boucle permettant de parcourir les opérations de même profondeur que la dernière du bloc afin d'optimiser les blocs et leurs nombres
             j = i + 1;
-            while (j < nb_operations && operations[j].profondeur == operation_actuelle->profondeur) {
+            while (j < nb_operations && operations[j].profondeur == operation_actuelle->profondeur)
+            {
                 float diff = abs((temps_total + temps_operation + operations[j].temps_operation) - temps_cycle);
-                if (diff <= meilleur_diff) {
+
+                if (diff <= meilleur_diff)
+                {
                     meilleur_diff = diff;
                     meilleur_j = j;
                 }
+
                 j++;
             }
 

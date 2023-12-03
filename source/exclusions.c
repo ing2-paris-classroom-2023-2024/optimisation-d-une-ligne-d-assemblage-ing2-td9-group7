@@ -14,17 +14,15 @@
  */
 Arete * get_exclusions(char * file_path, int * taille)
 {
-    printf("\nLecture du fichier %s...\n", file_path);
     FILE * fichier = file_loader(file_path, "r");
 
-    // recupere le nombre de ligne du fichier
+    // recuperer le nombre de ligne du fichier
     char c;
     while ((c = fgetc(fichier)) != EOF) {
         if (c == '\n') {
             (*taille)++;
         }
     }
-    printf("Il y a %d aretes :\n", *taille);
 
     // retour au debut du fichier
     rewind(fichier);
@@ -37,8 +35,6 @@ Arete * get_exclusions(char * file_path, int * taille)
         fscanf(fichier, "%d %d", &aretes[i].op_depart, &aretes[i].op_arrivee);
     }
 
-    afficher_aretes(aretes, *taille);
-
     fclose(fichier);
     return aretes;
 }
@@ -50,7 +46,7 @@ Arete * get_exclusions(char * file_path, int * taille)
  * @param ordre      : Nombre d'operations
  * @param taille     : Nombre d'aretes
  * @return           : Tableau d'operations triees par degre decroissant
- */
+*/
 Operation * tri_operations_degre_decroissant(Operation * operations, int ordre, int taille)
 {
     Operation * operations_triees = malloc(ordre * sizeof(Operation));
@@ -64,12 +60,6 @@ Operation * tri_operations_degre_decroissant(Operation * operations, int ordre, 
                 operations_triees[j + 1] = temp;
             }
         }
-    }
-
-    printf("\nListe triee : \n");
-
-    for (int k = 0; k < ordre; k++) {
-        printf("S%d\t- D %d \n", operations_triees[k].id_operation, operations_triees[k].deg);
     }
 
     return operations_triees;
@@ -163,8 +153,6 @@ Operation * assigner_couleurs(Operation * operations, Arete * aretes, int * ordr
 
     welsh_powell_coloration(operations, aretes, *ordre, *taille);
 
-    afficher_couleurs(operations, *ordre);
-
     return operations;
 }
 
@@ -199,10 +187,24 @@ void init_degres(Operation * operations, Arete * aretes, int * ordre, int * tail
                 operations[j].deg++;
             }
         }
+    }
+}
+
+
+void repartir_operations_exclusion(Chaine_production * chaine_production, Operation * operations, int nb_operations)
+{
+    for (int i = 0; i < nb_operations; i++)
+    {
+        // repartir les operations dans les stations en fonction de leur couleur
+        int couleur = operations[i].color;
+        int station = couleur - 1;
+
+        // placer l'operation dans la station
+        Bloc * bloc_actuel = chaine_production->blocs[station];
+        // ajouter l'operation dans le bloc
+        bloc_actuel->operations[i] = operations[i];
 
     }
-
-    afficher_operations(operations, *ordre);
 }
 
 
@@ -215,9 +217,15 @@ void contrainte_exclusion()
     int taille = 1;
     Arete * aretes = get_exclusions("data/exclusions.txt", &taille);
     Operation * operations = get_operations("data/operations.txt", &ordre);
+    Chaine_production * chaine_production = init_chaine_production(ordre, ordre);
 
     init_degres(operations, aretes, &ordre, &taille);
     operations = assigner_couleurs(operations, aretes, &ordre, &taille);
+
+    repartir_operations_exclusion(chaine_production, operations, ordre);
+
+    afficher_chaine_production(chaine_production);
+
 
     printf("\nFINITO\n");
 }

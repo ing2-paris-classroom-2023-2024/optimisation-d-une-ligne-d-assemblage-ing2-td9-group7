@@ -37,5 +37,6 @@ void afficher_bloc(Bloc * bloc);
 void afficher_chaine_production(Chaine_production * chaine_production);
 int get_temps_cycle(char * file_path);
 Operation * get_operations(char * file_path, int * nb_operations);
+void Color(int couleur_texte, int couleur_fond);
 
 #endif // HELPER_H

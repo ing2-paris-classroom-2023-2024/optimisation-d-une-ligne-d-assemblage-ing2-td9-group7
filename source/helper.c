@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
 #include "../headers/helper.h"
 #include "../headers/precedences.h"
 
@@ -37,8 +38,13 @@ FILE * file_loader(const char * filepath, const char * mode)
 void afficher_operations(Operation * operations, int nb_operations)
 {
     printf("\nOperations :\n");
+
+    Color(14, 0);
+    printf("OPERATION         TEMPS               PROFONDEUR         DEGRE          COULEUR\n");
+    Color(15, 0);
+
     for (int i = 0; i < nb_operations; i++) {
-        printf("Operation %d : %.1fs, %d, %d\n", operations[i].id_operation, operations[i].temps_operation, operations[i].profondeur, operations[i].deg);
+        printf("Operation : %d\t T %.2fs\t\t P %d\t\t D %d\t\t C %d\n", operations[i].id_operation, operations[i].temps_operation, operations[i].profondeur, operations[i].deg, operations[i].color);
     }
 }
 
@@ -121,17 +127,36 @@ Chaine_production * init_chaine_production(int nb_blocs, int nb_op_total) {
 */
 void afficher_bloc(Bloc * bloc)
 {
+    int operations_vides = 0;
+
+    for (int i = 0; i < bloc->nb_operations; i++)
+    {
+        if (bloc->operations[i].id_operation == -1)
+        {
+            operations_vides++;
+        }
+    }
+
+    if (operations_vides == bloc->nb_operations)
+    {
+        return;
+    }
+
+    Color(11, 0);
     printf("\nBloc %d :\n", bloc->id_bloc);
+    Color(14, 0);
+    printf("OPERATION         TEMPS              PROFONDEUR         DEGRE          COULEUR\n");
+    Color(15, 0);
 
     for (int i = 0; i < bloc->nb_operations; i++) {
         if (bloc->operations[i].id_operation != -1)
         {
-            printf("Operation : %d, %.1f secondes, %d\n", bloc->operations[i].id_operation, bloc->operations[i].temps_operation,  bloc->operations[i].profondeur);
+            printf("Operation : %d\t T %.2fs\t\t P %d\t\t D %d\t\t C %d\n", bloc->operations[i].id_operation, bloc->operations[i].temps_operation,  bloc->operations[i].profondeur, bloc->operations[i].deg, bloc->operations[i].color);
         }
         bloc->temps_bloc += bloc->operations[i].temps_operation;
     }
 
-    printf("Temps d'execution : %.1f secondes\n", bloc->temps_bloc);
+    printf("Temps d'execution : %.2fs\n", bloc->temps_bloc);
 }
 
 
@@ -141,7 +166,9 @@ void afficher_bloc(Bloc * bloc)
 */
 void afficher_chaine_production(Chaine_production * chaine_production)
 {
+    Color(12, 0);
     printf("\nAffichage de la chaine de production :\n");
+    Color(15, 0);
 
     for (int i = 0; i < chaine_production->nb_blocs; i++) {
         afficher_bloc(chaine_production->blocs[i]);
@@ -156,14 +183,15 @@ void afficher_chaine_production(Chaine_production * chaine_production)
 */
 int get_temps_cycle(char * file_path)
 {
-    printf("\nLecture du fichier %s...\n", file_path);
     int temps_cycle = 0;
     FILE * fichier = file_loader(file_path, "r");
 
     fscanf(fichier, "%d", &temps_cycle);
     fclose(fichier);
 
+    Color(11, 0);
     printf("Temps max : %d secondes\n", temps_cycle);
+    Color(15, 0);
     return temps_cycle;
 }
 
@@ -175,7 +203,6 @@ int get_temps_cycle(char * file_path)
 */
 Operation * get_operations(char * file_path, int * nb_operations)
 {
-    printf("\nLecture du fichier %s...\n", file_path);
     FILE * fichier = file_loader(file_path, "r");
 
     // recupere le nombre de ligne du fichier
@@ -185,7 +212,6 @@ Operation * get_operations(char * file_path, int * nb_operations)
             *nb_operations += 1;
         }
     }
-    printf("Il y a %d operations :\n", * nb_operations);
 
     // retour au debut du fichier
     rewind(fichier);
@@ -200,4 +226,11 @@ Operation * get_operations(char * file_path, int * nb_operations)
 
     fclose(fichier);
     return operations;
+}
+
+
+void Color(int couleur_texte, int couleur_fond) // fonction d'affichage de couleurs
+{
+    HANDLE H = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(H, couleur_fond * 16 + couleur_texte);
 }

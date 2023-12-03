@@ -11,7 +11,6 @@
  */
 Arete * get_precedences(char * file_path, int * taille)
 {
-    printf("\nLecture du fichier %s...\n", file_path);
     FILE * fichier = file_loader(file_path, "r");
 
     // recupere le nombre de ligne du fichier
@@ -21,7 +20,6 @@ Arete * get_precedences(char * file_path, int * taille)
             (*taille)++;
         }
     }
-    printf("Il y a %d aretes :\n", *taille);
 
     // retour au debut du fichier
     rewind(fichier);
@@ -33,8 +31,6 @@ Arete * get_precedences(char * file_path, int * taille)
     for (int i = 0; i < *taille; i++) {
         fscanf(fichier, "%d %d", &aretes[i].op_depart, &aretes[i].op_arrivee);
     }
-
-    afficher_aretes(aretes, *taille);
 
     fclose(fichier);
     return aretes;
@@ -108,8 +104,6 @@ Operation * tri_operations_profondeur(Operation * operations, int taille)
 //& puis la découper en blocs avec la contrainte de temps de cycle
 Chaine_production * chaine_precedences(int nombre_operations, int taille, Operation * operations, Arete * aretes)
 {
-    printf("Nombre d'operations : %d\n", nombre_operations);
-
     int nombre_blocs = nombre_operations;
 
     // On crée la chaine
